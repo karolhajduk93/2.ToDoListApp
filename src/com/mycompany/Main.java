@@ -5,7 +5,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -20,6 +19,7 @@ public class Main extends JFrame{
     JPanel panel;
     JScrollPane scrollPane;
     ArrayList<Task> allTasks = new ArrayList<>();
+    ArrayList<Task> doneTasks = new ArrayList<>();
     Task myTask;
 
 
@@ -63,22 +63,24 @@ public class Main extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource() == eventName){
-                    /* to do: saving every task in some file, figure out how to remove
-                       those tasks (checkbox + jlabel) -> whole box from screen or how to send them to "done"
+                    /* to do: saving every task in some file, adding to "done" b4 removing
                        also "done" to do*/
 
 
                     myTask = new Task(eventName.getText(), date);
-/*
-                    myTask.getTaskCheckbox().addItemListener(event -> {
-                        if(myTask.getTaskCheckbox().getState()){
-                            System.out.println("I");
-                            boxBox.remove(myTask.getTask());
-                            boxBox.revalidate();
-                            boxBox.repaint();
-                        }
-                    });
-                    System.out.println("O");*/
+                    allTasks.add(myTask);
+
+                    for(Task task: allTasks) {
+                        task.getTaskCheckbox().addItemListener(event -> {
+                            if (task.getTaskCheckbox().getState()) {
+                                boxBox.remove(task.getTask());
+                                doneTasks.add(task); // adding to done list
+                                allTasks.remove(task);
+                                boxBox.revalidate();
+                                boxBox.repaint();
+                            }
+                        });
+                    }
 
                     boxBox.add(myTask.getTask());
                     boxBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, boxBox.getMinimumSize().height + 11));
@@ -89,6 +91,10 @@ public class Main extends JFrame{
                 }
             }
         });
+
+
+
+
         eventBox.add(eventName);
 
         date = new Date();
