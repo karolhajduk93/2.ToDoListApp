@@ -19,8 +19,8 @@ public class Main extends JFrame{
     Date date;
     JPanel panel;
     JScrollPane scrollPane;
+    ArrayList<Task> allTasks = new ArrayList<>();
     Task myTask;
-    SimpleDateFormat simpleDate;
 
 
     public static void main(String[] args) {
@@ -69,6 +69,16 @@ public class Main extends JFrame{
 
 
                     myTask = new Task(eventName.getText(), date);
+/*
+                    myTask.getTaskCheckbox().addItemListener(event -> {
+                        if(myTask.getTaskCheckbox().getState()){
+                            System.out.println("I");
+                            boxBox.remove(myTask.getTask());
+                            boxBox.revalidate();
+                            boxBox.repaint();
+                        }
+                    });
+                    System.out.println("O");*/
 
                     boxBox.add(myTask.getTask());
                     boxBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, boxBox.getMinimumSize().height + 11));
