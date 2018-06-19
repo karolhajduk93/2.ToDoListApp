@@ -2,10 +2,12 @@ package com.mycompany;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-class Task extends JFrame {
+class Task extends JFrame implements Serializable {
+    private static final long  serialVersionUID = 4492170581089303682L;
     private Checkbox taskCheckbox;
     private JLabel taskName;
     private Date deadLine;

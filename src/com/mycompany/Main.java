@@ -5,6 +5,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 
 
@@ -31,10 +33,9 @@ public class Main extends JFrame{
     private Main(){
         this.setSize(400, 600);
         this.setTitle("To-Do List");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
-
 
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -92,9 +93,6 @@ public class Main extends JFrame{
             }
         });
 
-
-
-
         eventBox.add(eventName);
 
         date = new Date();
@@ -114,6 +112,66 @@ public class Main extends JFrame{
         eventBox.add(dateSpin);
 
         panel.add(eventBox, new FlowLayout());
+
+        ///////////////////////////////////////////////////////////
+        Path path = Paths.get("C:\\Users\\Karol_Hajduk\\IdeaProjects\\ToDoList\\Task_to_do.ser");
+
+        if(Files.exists(path)) {
+
+            //read ArrayList from file
+            ArrayList<Task> fileTasks = null;
+            try {
+                FileInputStream fileInputStream = new FileInputStream("Task_to_do.ser");
+                ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+                fileTasks = (ArrayList<Task>) objectInputStream.readObject();
+                fileInputStream.close();
+                objectInputStream.close();
+            } catch (IOException | ClassNotFoundException e2) {
+                e2.printStackTrace();
+            }
+
+            for (Task task : fileTasks) {
+                allTasks.add(task);
+
+                for(Task task2: allTasks) {
+                    task.getTaskCheckbox().addItemListener(event -> {
+                        if (task2.getTaskCheckbox().getState()) {
+                            boxBox.remove(task2.getTask());
+                            doneTasks.add(task2); // adding to done list
+                            allTasks.remove(task2);
+                            boxBox.revalidate();
+                            boxBox.repaint();
+                        }
+                    });
+                }
+                boxBox.add(task.getTask());
+                boxBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, boxBox.getMinimumSize().height + 11));
+                panel.add(boxBox);
+            }
+            boxBox.revalidate();
+            boxBox.repaint();
+        }
+        /////////////////////////////////////////////
+
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                super.componentHidden(e);
+                //////////////////////////////////////////////////
+                //write  ArrayList to file
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream("Task_to_do.ser");
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+                    objectOutputStream.writeObject(allTasks);
+                    objectOutputStream.close();
+                    fileOutputStream.close();
+                }catch (IOException e1){
+                    e1.printStackTrace();
+                }
+                ////////////////////////////////////
+                ((JFrame)(e.getComponent())).dispose();
+            }
+        });
 
         this.add(scrollPane);
         this.setVisible(true);
